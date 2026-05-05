@@ -1,0 +1,3 @@
+{"action": "nmap_no_ping", "phase": "host", "reason": "e2e: skip ICMP between containers", "confidence": 0.9}
+{"action": "nmap_top_ports", "phase": "port", "reason": "e2e: breadth over lab subnet", "confidence": 0.9}
+{"action": "stop_scan", "phase": "port", "reason": "e2e: scripted completion", "confidence": 0.9}

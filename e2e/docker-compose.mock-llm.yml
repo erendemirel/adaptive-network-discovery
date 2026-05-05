@@ -1,0 +1,17 @@
+services:
+  mock-llm:
+    build:
+      context: .
+      dockerfile: Dockerfile.mock-ollama
+    networks:
+      - e2e_control
+    stop_grace_period: 2s
+
+  scanner:
+    environment:
+      # Overrides repo-root .env for the mock stack (fixed endpoint + model tag).
+      OLLAMA_HOST: http://mock-llm:11434
+      OLLAMA_MODEL: mock
+    depends_on:
+      - mock-llm
+      - target

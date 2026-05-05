@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptive-network-scanner"
+version = "0.1.0"
+description = "Adaptive Nmap discovery orchestrated by Gemma (LLM strategist)"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pydantic>=2.5",
+    "httpx>=0.26",
+    "rich>=13.7",
+    "eval-type-backport>=0.2.0; python_version < \"3.10\"",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "ruff>=0.1"]
+
+[project.scripts]
+adaptive-scan = "network_scanner.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["network_scanner*"]
+
+[tool.pytest.ini_options]
+markers = [
+    "e2e: requires Docker / full lab (slow); see e2e/README.md",
+]

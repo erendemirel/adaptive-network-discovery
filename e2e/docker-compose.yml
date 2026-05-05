@@ -1,0 +1,41 @@
+# Base lab: many targets on 172.30.0.0/24; control plane on 172.31.0.0/28
+# Usage (from repo root):
+#   docker compose -f e2e/docker-compose.yml -f e2e/docker-compose.mock-llm.yml up -d --build --scale target=40
+#   ./e2e/run_e2e.sh
+#   docker compose -f e2e/docker-compose.yml -f e2e/docker-compose.mock-llm.yml down
+
+networks:
+  e2e_control:
+    ipam:
+      config:
+        - subnet: 172.31.0.0/28
+  e2e_targets:
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+services:
+  target:
+    image: python:3.11-alpine
+    command: ["python", "-m", "http.server", "80"]
+    networks:
+      - e2e_targets
+    stop_grace_period: 2s
+
+  scanner:
+    build:
+      context: ..
+      dockerfile: e2e/Dockerfile.scanner
+    networks:
+      e2e_control: {}
+      e2e_targets: {}
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    # Scanner config: repo-root .env (OLLAMA_*, ADAPTIVE_SCAN_*, etc.). Overlays only set OLLAMA_HOST / mock model.
+    env_file:
+      - ../.env
+    entrypoint: ["sleep", "infinity"]
+    stop_grace_period: 2s
+    depends_on:
+      - target

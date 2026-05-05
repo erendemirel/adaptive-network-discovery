@@ -1,0 +1,6 @@
+FROM python:3.11-slim
+WORKDIR /app
+COPY mock_ollama_server.py mock_decisions.jsonl ./
+ENV MOCK_DECISIONS=/app/mock_decisions.jsonl
+EXPOSE 11434
+CMD ["python", "/app/mock_ollama_server.py"]
