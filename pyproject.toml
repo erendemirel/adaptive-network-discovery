@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "adaptive-network-scanner"
 version = "0.1.0"
-description = "Adaptive Nmap discovery orchestrated by Gemma (LLM strategist)"
+description = "Adaptive Nmap discovery orchestrated by LLMs"
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
