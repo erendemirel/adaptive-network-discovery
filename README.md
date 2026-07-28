@@ -1,6 +1,6 @@
 # Adaptive network scanner
 
-LLM guided (Qwen coder and Gemma via Ollama) Nmap orchestration. It is capable of discovering enterprise networks with a single command. Low noise mode offers low visibility (though it will not reliably defeat a strong firewall or hide from EDR)
+LLM guided (Qwen coder and Gemma via Ollama) Nmap orchestration. It is capable of discovering enterprise networks with a single command from a regular PC without a powerful GPU. Low noise mode offers low visibility (though it will not reliably defeat a strong firewall or hide from EDR)
 
 
 ## Installation and Usage
