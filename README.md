@@ -10,7 +10,7 @@ pip install -r requirements.txt
 python -m network_scanner 192.0.2.10
 python -m network_scanner 10.0.0.0/24 --json-out out.json
 ```
-**Requires a running Ollama** (or compatible API at `OLLAMA_HOST`(see below)) and a model (`OLLAMA_MODEL`(see below)). The code default is **`gemma4:e2b`**; for **low RAM / speed**, try **`qwen2.5-coder:1.5b`** or **`qwen2.5-coder:0.5b`**.
+**Requires a running Ollama** (or compatible API at `OLLAMA_HOST`(see below)) and a model (`OLLAMA_MODEL`(see below)). The code default is `gemma4:e2b`; for **low RAM/speed**, try `qwen2.5-coder:1.5b` or `qwen2.5-coder:0.5b`.
 
 ## Configuration
 
