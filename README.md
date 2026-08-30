@@ -17,8 +17,10 @@ ollama pull gemma4:e2b
 
 ## Installation and Usage
 
+Install from **`pyproject.toml`** (editable) so deps stay aligned with the package metadata. Prefer this over `pip install -r requirements.txt`, which can drift.
+
 ```bash
-pip install -r requirements.txt
+pip install -e .
 python -m network_scanner 192.0.2.10
 python -m network_scanner 10.0.0.0/24 --json-out out.json
 ```
