@@ -2,6 +2,18 @@
 
 LLM guided(Qwen coder and Gemma via Ollama) Nmap orchestrator that can run on a regular PC without requiring a powerful GPU and is capable of discovering enterprise networks with a single command. Low noise mode offers low visibility (though it will not reliably defeat a strong firewall or hide from EDR)
 
+## Prerequisites
+
+- **Python** 3.9 or newer
+- **nmap** on `PATH` (system package; not installed by `pip`)
+- **Ollama** (or a compatible API) running and reachable
+- A **pulled model** matching `OLLAMA_MODEL` (code default `gemma4:e2b`; for low RAM/speed try `qwen2.5-coder:1.5b` or `qwen2.5-coder:0.5b`)
+
+```bash
+# example: install nmap (distro-specific), then:
+ollama serve   # if not already running
+ollama pull gemma4:e2b
+```
 
 ## Installation and Usage
 
@@ -10,7 +22,12 @@ pip install -r requirements.txt
 python -m network_scanner 192.0.2.10
 python -m network_scanner 10.0.0.0/24 --json-out out.json
 ```
-**Requires a running Ollama** (or compatible API at `OLLAMA_HOST`(see below)) and a model (`OLLAMA_MODEL`(see below)). The code default is `gemma4:e2b`; for **low RAM/speed**, try `qwen2.5-coder:1.5b` or `qwen2.5-coder:0.5b`.
+
+**Requires a running Ollama** (or compatible API at `OLLAMA_HOST` (see below)) and a model (`OLLAMA_MODEL` (see below)).
+
+**Dry run still needs Ollama:** `ADAPTIVE_SCAN_DRY_RUN=1` only skips executing nmap; the strategist still calls the LLM to choose the first action before printing the argv.
+
+For lab setup, Compose overlays, and mock vs real LLM runs, see **[`e2e/README.md`](e2e/README.md)** (full operator guide). This root README is a short summary of install and env knobs.
 
 ## Configuration
 
@@ -52,8 +69,24 @@ The scanner has a "strategist" as an LLM that acts as a decision taker, and an "
 | `ADAPTIVE_SCAN_LLM_RECENT_STEPS` | How many completed steps to summarize in `recent_steps` for the strategist (default `5`, max `24`; `0` disables) |
 | `ADAPTIVE_SCAN_RELOAD_SEEDS_INTERVAL` | Re-read seed file every N seconds |
 | `ADAPTIVE_SCAN_RELOAD_SEEDS_MTIME` | `1` = re-read when seed file mtime changes |
-| `ADAPTIVE_SCAN_DRY_RUN` | `1` = print first nmap argv only |
+| `ADAPTIVE_SCAN_DRY_RUN` | `1` = print first nmap argv only (**still requires Ollama** for the strategist; see above) |
 | `ADAPTIVE_SCAN_UDP_TOP_PORTS` | String count for `nmap_udp_scan` `--top-ports` (overrides defaults) |
 | `ADAPTIVE_SCAN_LLM_TUNING` | `0` / `off` disables strategist `run_tuning` (default **on** when unset); clamps use the variables above |
 | `ADAPTIVE_SCAN_REPEAT_GUARD` | `0` / `off` disables automatic remap when the model repeats the same nmap action on the same target as the prior step (default **on** when unset) |
+
+### Additional env vars
+
+Less commonly set; omitted from the main table for brevity:
+
+| Variable | Purpose |
+|----------|---------|
+| `ADAPTIVE_SCAN_HOST_TIMEOUT` | nmap `--host-timeout` (e.g. `300s`). Unset → `600s` when `large_network`, else `300s`. Also caps LLM `run_tuning.host_timeout`. |
+| `ADAPTIVE_SCAN_MAX_SCAN_RATE` | `--max-scan-rate` on **large-network** runs (when not already set by global/XDR/LLM tuning). |
+| `ADAPTIVE_SCAN_MIN_HOSTGROUP` | nmap `--min-hostgroup` for large-network scans (default `32`). |
+| `ADAPTIVE_SCAN_MAX_HOSTGROUP` | nmap `--max-hostgroup` for large-network scans (default `128`). |
+| `ADAPTIVE_SCAN_LLM_TIMING_PRE_NMAP_THRESHOLD` | Before any probe, consecutive `retry_with_timing_slow` / `retry_with_timing_normal` choices (including the current decision) that trigger model fallback. Default **`2`**. Set **`0`** / **`off`** / **`false`** / **`no`** / **`none`** to disable. |
+| `ADAPTIVE_SCAN_FORCE_SYN`, `ADAPTIVE_SCAN_PREFER_CONNECT` | Force SYN (`-sS`) or connect (`-sT`) TCP scan type when set truthy. |
+| `ADAPTIVE_SCAN_NMAP_XML_STDOUT` | `1` / `true` / `yes` → read nmap XML from stdout instead of a temp file. |
+| `OLLAMA_TIMEOUT`, `OLLAMA_OPTIONS`, `OLLAMA_THINK`, `OLLAMA_CHAT_FORMAT`, `OLLAMA_USE_GENERATE_API` | Ollama client tuning (timeouts, `options` JSON, think/format/generate vs chat). See **[`e2e/README.md`](e2e/README.md)**. |
+
 ---
